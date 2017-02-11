@@ -1,0 +1,27 @@
+body {
+    font-family: "arial";
+    font-size: 0.85em;
+}
+
+#easel {
+    float: left;
+    padding-right: 10px;
+}
+
+#dashboard {
+    text-align: left;
+}
+
+#uploadarea {
+    display: none;
+}
+
+.button {
+    padding: 4px;
+    text-decoration: none;
+    font-size: 13px;
+    color: #000000;
+    background-color: #cccccc;
+    border: 1px solid #000000;
+    border-radius: 5px;
+}

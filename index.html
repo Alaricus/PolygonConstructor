@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Polygon Constructor</title>
+        <link href="styles.css" rel="stylesheet" type="text/css" />
+        <script src="polygontool.js"></script>
+    </head>
+    <!-- TODO: Move the CSS outside. -->
+    <body style="text-align: center;">
+        <main>
+            <div id="easel">
+                <canvas id="board" style="border: 1px solid black;"></canvas>
+            </div>
+            <div id="dashboard">
+                <br>
+                <button class="button" id="clearcurrent">Clear Current Polygon</button>
+                <br><br>
+                <button class="button" id="clearsaved"></button>
+                <br>
+                <p>Use the "X" button to delete a point you are dragging.</p>
+                <p>Counterclockwise polygons are converted to clockwise.</p>
+                <p>Convex vertices are blue.</p>
+                <p>Concave vertices are ged.</p>
+                <p>Simple polygons have blue sides.</p>
+                <p>Complex Polygons have red sides.</p>
+                <br>
+                <a class="button" href="" id="export" download="polygons.json">Export Current Polygons</a>
+                <br><br>
+                <button class="button" id="import">Import Polygon JSON</button>
+                <div id="uploadarea">
+                    <input type="file" id="file" accept=".json" value="Import" name="lol">
+                </div>
+            </div>
+        </main> 
+    </body>
+<html>
