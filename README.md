@@ -19,3 +19,5 @@ Planned features:
 
 * Record all coordinates as relative to allow for the scaling of game's window.
 * Check imported JSON for validity.
+* Drag and drop entire polygons.
+* Delete entire polygons.
