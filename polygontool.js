@@ -2,17 +2,62 @@
 
 window.onload = function() {
 
-    let ctx = document.getElementById("board").getContext("2d");
+    let canvas = document.getElementById("screen")
+    let ctx = canvas.getContext("2d");
     let mouseData;
 
-    // TODO: do away with the magic numbers
-    ctx.canvas.width = 1010;
-    ctx.canvas.height = 720;
+    let initDrop = document.getElementById("initDrop");
+    initDrop.addEventListener("change", () => {
+        let controls = document.getElementById("controls");
+        switch(initDrop.value) {
+            case "default":
+                canvas.style.display = "inline";
+                canvas.width = 800;
+                canvas.height = 800;
+                controls.style.display = "inline-block";
+                break;
+            case "dimensions":
+                let dimensions = document.getElementById("dimensions");
+                let hSize = document.getElementById("hSize");
+                let wSize = document.getElementById("wSize");
+                let setSize = document.getElementById("setSize");
 
-    document.getElementById("clearcurrent").addEventListener("click", (e) => {
-        currentPolygon = [];
-        polygonInProgress = false;
-    }, false);
+                dimensions.style.display = "inline";
+
+                hSize.addEventListener("keypress", (e) => {                    
+                    if (e.charCode < 48) {
+                        console.log(e.charCode);
+                        e.preventDefault();
+                        return false;
+                    }
+                }, false);
+
+                wSize.addEventListener("keypress", (e) => {
+                    if (e.charCode < 48) {
+                        console.log(e.charCode);
+                        e.preventDefault();
+                        return false;
+                    }
+                }, false);
+
+                setSize.addEventListener("click", (e) => {
+                    if (hSize.value > 0 && wSize.value > 0) {
+                        canvas.style.display = "inline";
+                        canvas.width = wSize.value;
+                        canvas.height = hSize.value;
+                        controls.style.display = "inline-block";
+                        dimensions.style.display = "none";
+                    }                    
+                }, false);
+                break;
+            case "upload":
+                document.getElementById("upload").style.display = "inline";
+                // TODO: Add the code for uploading an image and setting the size
+                break;
+        }
+        document.getElementById("selector").style.display = "none";    
+    });
+
     document.getElementById("clearsaved").addEventListener("click", (e) => {
         allPolygons = [];
     }, false);
@@ -20,9 +65,19 @@ window.onload = function() {
     ctx.canvas.addEventListener("mousemove", (e) => {
         mouseData = getMouseData(ctx.canvas, e);
     }, false);
+
     ctx.canvas.addEventListener("mousedown", (e) => {
         checkForVertex(mouseData);
     }, false);
+
+    // A right click cancels polygon in progress.
+    ctx.canvas.addEventListener("contextmenu", (e) => {        
+        currentPolygon = [];
+        polygonInProgress = false;
+        e.preventDefault();
+        return false;
+    }, false);
+
     ctx.canvas.addEventListener("mouseup", (e) => {
         if (selectedPoint !== null || keyUsed) {
             selectedPoint = null;
@@ -48,6 +103,7 @@ window.onload = function() {
             }
         }
     }, false);
+
     document.addEventListener("keypress", (e) => { 
         // delete a point unless a polygon is a triangle, because we can't have
         // a polygon with less then 3 vertices
@@ -59,10 +115,45 @@ window.onload = function() {
         }
     });
 
+    let expo = document.getElementById("export");
+    expo.addEventListener("click", (e) => {
+        if (allPolygons.length > 0) {
+            // TODO: Need to save all coordinates as percent of h/w
+            let dataURL = JSON.stringify({canvas: {w: canvas.width, h: canvas.height}, polygons: allPolygons});
+            expo.href = "data:text/json;charset=utf-8," + encodeURIComponent(dataURL);
+        } else {
+            e.preventDefault();
+        }
+    });
+
+    let impo = document.getElementById("import");
+    impo.addEventListener("click", () => {
+        document.getElementById("uploadarea").style.display = "block";
+        impo.style.display = "none";
+    });
+
+    let reader = document.getElementById("file");
+    reader.addEventListener("change", () => {
+        let files = document.getElementById("file").files;
+        if (files.length > 0) {
+            let fr = new FileReader();        
+            fr.onload = function(e) {
+                let importedData = JSON.parse(e.target.result);
+                // TODO: once data is exported as percent, make sure to convert it back on import
+                canvas.width = importedData.canvas.w;
+                canvas.height = importedData.canvas.h;
+                allPolygons = importedData.polygons;
+            }            
+            fr.readAsText(files.item(0));
+        } 
+        document.getElementById("uploadarea").style.display = "none";
+        impo.style.display = "block";
+        // TODO: Clear the file input when done loading.
+    });
+
     let getMouseData = (canv, e) => {
         let rect = canv.getBoundingClientRect();
         return {
-            // TODO: do away with the magic numbers
             x: e.clientX - rect.left,
             y: e.clientY - rect.top
         };
@@ -192,33 +283,6 @@ window.onload = function() {
         let isInside = false;
     };
 
-    let expo = document.getElementById("export");
-    expo.addEventListener("click", (e) => {
-        if (allPolygons.length > 0) {
-            let dataURL = JSON.stringify(allPolygons);
-            expo.href = "data:text/json;charset=utf-8," + encodeURIComponent(dataURL);
-        }
-    });
-
-    let impo = document.getElementById("import");
-    impo.addEventListener("click", () => {
-        document.getElementById("uploadarea").style.display = "block";
-        impo.style.display = "none";
-    });
-
-
-    let reader = document.getElementById("file");
-    reader.addEventListener("change", () => {
-        let files = document.getElementById("file").files;
-        if (files.length > 0) {
-            let fr = new FileReader();        
-            fr.onload = function(e) { 
-                allPolygons = JSON.parse(e.target.result);
-            }            
-            fr.readAsText(files.item(0));
-        } 
-    });
-
     let allPolygons = [];
     let currentPolygon = []; 
     let polygonInProgress = false;
@@ -251,7 +315,6 @@ window.onload = function() {
 
             if (isComplex(allPolygons[i])) {
                 ctx.strokeStyle="#ff0000"; 
-                console.log("comp");
             } else {
                 ctx.strokeStyle="#0000ff";  
             }
