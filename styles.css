@@ -3,13 +3,34 @@ body {
     font-size: 0.85em;
 }
 
-#easel {
-    float: left;
-    padding-right: 10px;
+header {
+    margin-bottom: 20px;
 }
 
-#dashboard {
+#easel {
     text-align: left;
+    vertical-align: top;
+    display: inline-block;
+}
+
+#screen {
+    border: 1px solid #000000;
+    display: none;
+}
+
+#dimensions {
+    display: none;
+}
+
+#upload {
+    display: none;
+}
+
+#controls {
+    text-align: left;
+    padding-right: 10px;
+    display: none;
+    vertical-align: top;
 }
 
 #uploadarea {

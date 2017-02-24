@@ -5,18 +5,24 @@
         <link href="styles.css" rel="stylesheet" type="text/css" />
         <script src="polygontool.js"></script>
     </head>
-    <!-- TODO: Move the CSS outside. -->
     <body style="text-align: center;">
-        <main>
-            <div id="easel">
-                <canvas id="board" style="border: 1px solid black;"></canvas>
+        <header>
+            <div id="selector">
+                Select drawing area initialization type:
+                <select id="initDrop">
+                    <option value=""></option>
+                    <option value="default">Default</option>
+                    <option value="dimensions">Enter Dimensions</option>
+                    <option value="upload">Upload Image</option>
+                </select>
             </div>
-            <div id="dashboard">
+        </header>
+        <main>
+            <div id="controls">
                 <br>
-                <button class="button" id="clearcurrent">Clear Current Polygon</button>
-                <br><br>
                 <button class="button" id="clearsaved"></button>
                 <br>
+                <p>Right-click to cancel polygon in progress.</p>
                 <p>Use the "X" button to delete a point you are dragging.</p>
                 <p>Counterclockwise polygons are converted to clockwise.</p>
                 <p>Convex vertices are blue.</p>
@@ -28,8 +34,21 @@
                 <br><br>
                 <button class="button" id="import">Import Polygon JSON</button>
                 <div id="uploadarea">
-                    <input type="file" id="file" accept=".json" value="Import" name="lol">
+                    <input type="file" id="file" accept=".json" value="Import">
                 </div>
+            </div>
+            <div id="easel">
+                <div id="dimensions">
+                    <input type="number" min="1" value="800" id="wSize"> Width<br>
+                    <input type="number" min="1" value="600" id="hSize"> Height<br>
+                    <input type="button" id="setSize" value="Submit">
+                </div>
+                <div id="upload">
+                    <input type="file" accept="Image">
+                    <input type="button" value="Submit">
+                </div>
+                <div id="upload"></div>
+                <canvas id="screen"></canvas>
             </div>
         </main> 
     </body>
