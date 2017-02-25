@@ -16,6 +16,9 @@ Features:
 * Points of constructed polygons can be dragged and dropped.
 * The resulting work can be exported to a JSON file.
 * JSON files can be imported via drag and drop.
+* Multiple files can be imported to display all of the polygons they contain.
+* Imports can be done either file by file, or several files at a time.
+* Polygons identical to previously drawn or imported will be ignored. 
 
 Planned features:
 
