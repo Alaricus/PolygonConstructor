@@ -154,24 +154,30 @@ window.onload = function() {
 
     uploadArea.addEventListener("drop", (e) => {
         e.preventDefault();
-        let fr = new FileReader();
-        fr.onload = function(event) {
-            try {
-                let importedData = JSON.parse(event.target.result);
-                canvas.width = importedData.canvas.w;
-                canvas.height = importedData.canvas.h;
-                allPolygons = importedData.polygons;
-                uploadArea.style.display = "none";
-                uploadArea.style.borderColor = "dodgerblue";
-                uploadArea.style.backgroundColor = "white";
-                impo.style.display = "block";
-            } catch (err) {
-                uploadArea.style.borderColor = "red";
-                uploadArea.style.backgroundColor = "pink";
-                uploadArea.innerHTML = "<br>Wrong file type or file corrupted.<br><br>Try again."
+        if(e.dataTransfer.files.length === 1) {
+            let fr = new FileReader();
+            fr.onload = function(event) {
+                try {
+                    let importedData = JSON.parse(event.target.result);
+                    canvas.width = importedData.canvas.w;
+                    canvas.height = importedData.canvas.h;
+                    allPolygons = importedData.polygons;
+                    uploadArea.style.display = "none";
+                    uploadArea.style.borderColor = "dodgerblue";
+                    uploadArea.style.backgroundColor = "white";
+                    impo.style.display = "block";
+                } catch (err) {
+                    uploadArea.style.borderColor = "red";
+                    uploadArea.style.backgroundColor = "pink";
+                    uploadArea.innerHTML = "<br>Wrong file type or file corrupted.<br><br>Try again."
+                }
             }
+            fr.readAsText(e.dataTransfer.files[0]);
+        } else {
+            uploadArea.style.borderColor = "red";
+            uploadArea.style.backgroundColor = "pink";
+            uploadArea.innerHTML = "<br>Cannot import multiple files.<br><br>Try again."
         }
-        fr.readAsText(e.dataTransfer.files[0]);
     }, false);
 
     let getMouseData = (canv, e) => {
