@@ -15,7 +15,7 @@ Features:
 * Polygons are color coded: simple ones are blue, complex ones are res.
 * Points of constructed polygons can be dragged and dropped.
 * The resulting work can be exported to a JSON file.
-* JSON files can be imported.
+* JSON files can be imported via drag and drop.
 
 Planned features:
 

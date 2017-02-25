@@ -118,7 +118,6 @@ window.onload = function() {
     let expo = document.getElementById("export");
     expo.addEventListener("click", (e) => {
         if (allPolygons.length > 0) {
-            // TODO: Need to save all coordinates as percent of h/w
             let dataURL = JSON.stringify({canvas: {w: canvas.width, h: canvas.height}, polygons: allPolygons});
             expo.href = "data:text/json;charset=utf-8," + encodeURIComponent(dataURL);
         } else {
@@ -128,28 +127,58 @@ window.onload = function() {
 
     let impo = document.getElementById("import");
     impo.addEventListener("click", () => {
-        document.getElementById("uploadarea").style.display = "block";
+        document.getElementById("uploadArea").style.display = "block";
         impo.style.display = "none";
     });
 
-    let reader = document.getElementById("file");
-    reader.addEventListener("change", () => {
-        let files = document.getElementById("file").files;
-        if (files.length > 0) {
-            let fr = new FileReader();        
-            fr.onload = function(e) {
-                let importedData = JSON.parse(e.target.result);
-                // TODO: once data is exported as percent, make sure to convert it back on import
-                canvas.width = importedData.canvas.w;
-                canvas.height = importedData.canvas.h;
-                allPolygons = importedData.polygons;
-            }            
-            fr.readAsText(files.item(0));
-        } 
-        document.getElementById("uploadarea").style.display = "none";
-        impo.style.display = "block";
-        // TODO: Clear the file input when done loading.
-    });
+    let uploadArea = document.getElementById("uploadArea");
+
+    uploadArea.addEventListener("dragenter", (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = "limegreen";
+        uploadArea.style.backgroundColor = "palegreen";
+        return false;
+    }, false);
+
+    uploadArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = "limegreen";
+        uploadArea.style.backgroundColor = "palegreen";
+        return false;
+    }, false);
+
+    uploadArea.addEventListener("dragleave", (e) => {
+        uploadArea.style.borderColor = "dodgerblue";
+        uploadArea.style.backgroundColor = "white";
+    }, false);
+
+    uploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        if(e.dataTransfer.files.length === 1) {
+            let fr = new FileReader();
+            fr.onload = function(event) {
+                try {
+                    let importedData = JSON.parse(event.target.result);
+                    canvas.width = importedData.canvas.w;
+                    canvas.height = importedData.canvas.h;
+                    allPolygons = importedData.polygons;
+                    uploadArea.style.display = "none";
+                    uploadArea.style.borderColor = "dodgerblue";
+                    uploadArea.style.backgroundColor = "white";
+                    impo.style.display = "block";
+                } catch (err) {
+                    uploadArea.style.borderColor = "red";
+                    uploadArea.style.backgroundColor = "pink";
+                    uploadArea.innerHTML = "<br>Wrong file type or file corrupted.<br><br>Try again."
+                }
+            }
+            fr.readAsText(e.dataTransfer.files[0]);
+        } else {
+            uploadArea.style.borderColor = "red";
+            uploadArea.style.backgroundColor = "pink";
+            uploadArea.innerHTML = "<br>Cannot import multiple files.<br><br>Try again."
+        }
+    }, false);
 
     let getMouseData = (canv, e) => {
         let rect = canv.getBoundingClientRect();
@@ -290,7 +319,7 @@ window.onload = function() {
     let keyUsed = false;
 
     let draw = () => {
-        ctx.clearRect(0, 0, 1010, 720);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         // Draw the vertices and connecting lines of the polygon currently being built
         if (polygonInProgress && selectedPoint === null) {
             for (let i = 0; i < currentPolygon.length; i++) {
