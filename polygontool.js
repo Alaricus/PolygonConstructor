@@ -154,31 +154,61 @@ window.onload = function() {
 
     uploadArea.addEventListener("drop", (e) => {
         e.preventDefault();
-        if(e.dataTransfer.files.length === 1) {
+        let maxW = 0;
+        let maxH = 0;
+        let error = false;
+        // Borrowing an array method to iterate through these files.
+        Array.prototype.forEach.call(e.dataTransfer.files, (item) => {
             let fr = new FileReader();
             fr.onload = function(event) {
                 try {
+                    if (error) { throw "Had an error in a previous file." }
                     let importedData = JSON.parse(event.target.result);
-                    canvas.width = importedData.canvas.w;
-                    canvas.height = importedData.canvas.h;
-                    allPolygons = importedData.polygons;
+                    // Using the largest of all imported files' canvas dimensions to merge all files
+                    if (importedData.canvas.w > maxW) {
+                        canvas.width = importedData.canvas.w;
+                        maxW = importedData.canvas.w;
+                    }
+                    if (importedData.canvas.h > maxH) {
+                        canvas.height = importedData.canvas.h;
+                        maxH = importedData.canvas.h;
+                    }
+
+                    importedData.polygons.forEach((newPoly) => {
+                        // If even one matches, the whole thing stops and returns true.
+                        let match = allPolygons.some((existingPoly) => {
+                            return polygonsMatch(existingPoly, newPoly);
+                        }); 
+                        
+                        if (!match) {
+                            allPolygons.push(newPoly);
+                        }
+                    });
+
                     uploadArea.style.display = "none";
                     uploadArea.style.borderColor = "dodgerblue";
                     uploadArea.style.backgroundColor = "white";
                     impo.style.display = "block";
                 } catch (err) {
+                    uploadArea.style.display = "block";
                     uploadArea.style.borderColor = "red";
                     uploadArea.style.backgroundColor = "pink";
-                    uploadArea.innerHTML = "<br>Wrong file type or file corrupted.<br><br>Try again."
+                    impo.style.display = "none";
+                    uploadArea.innerHTML = `<br>Wrong file type or corrupted file.<br><br>Try again.`;
+                    error = true;
                 }
             }
-            fr.readAsText(e.dataTransfer.files[0]);
-        } else {
-            uploadArea.style.borderColor = "red";
-            uploadArea.style.backgroundColor = "pink";
-            uploadArea.innerHTML = "<br>Cannot import multiple files.<br><br>Try again."
-        }
+            fr.readAsText(item);
+        });
     }, false);
+
+    let polygonsMatch = (poly1, poly2) => {
+        if (poly1.length !== poly2.length) { return false; }
+        // If even one doesn't match, the whole thing stops and returns false.
+        return poly1.every((item, index) => {
+            return item.x === poly2[index].x && item.y === poly2[index].y;
+        });
+    };
 
     let getMouseData = (canv, e) => {
         let rect = canv.getBoundingClientRect();
