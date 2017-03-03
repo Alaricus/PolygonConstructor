@@ -3,7 +3,6 @@
     <head>
         <title>Polygon Constructor</title>
         <link href="styles.css" rel="stylesheet" type="text/css" />
-        <script src="polygontool.js"></script>
     </head>
     <body style="text-align: center;">
         <header>
@@ -20,10 +19,12 @@
         <main>
             <div id="controls">
                 <br>
-                <button class="button" id="clearsaved"></button>
+                <button class="button" id="clearSaved"></button>
+                <br><br>
+                <button class="button" id="clearImage">Clear Image</button>
                 <br>
                 <p>Right-click to cancel a polygon in progress.</p>
-                <p>Use the "X" button to delete a point you are dragging.</p>
+                <p>Use the "X" button to delete a vertex you are dragging.</p>
                 <p>Counterclockwise polygons are converted to clockwise.</p>
                 <p>Convex vertices are blue.</p>
                 <p>Concave vertices are red.</p>
@@ -45,12 +46,14 @@
                     <input type="button" id="setSize" value="Submit">
                 </div>
                 <div id="upload">
-                    <input type="file" accept="Image">
-                    <input type="button" value="Submit">
+                    <div id="imgUploadArea">
+                        <br>
+                        Drag an image file here.
+                    </div>
                 </div>
-                <div id="upload"></div>
                 <canvas id="screen"></canvas>
             </div>
-        </main> 
+        </main>
+        <script src="polygontool.js"></script>
     </body>
 <html>
