@@ -4,7 +4,7 @@ body {
 }
 
 header {
-    margin-bottom: 20px;
+    margin-bottom: 20px;font-size: 0.85em;
 }
 
 #easel {
@@ -15,33 +15,39 @@ header {
 
 #screen {
     border: 1px solid #000000;
-    display: none;
-}
-
-#dimensions {
-    display: none;
-}
-
-#upload {
-    display: none;
+    display: inline;
 }
 
 #controls {
     text-align: left;
     padding-right: 10px;
-    display: none;
     vertical-align: top;
+    display: inline-block;
 }
 
 #uploadArea, #imgUploadArea {
-    display: none;
     border: 3px dashed dodgerblue;
-    height: 200px;
+    height: 100px;
     text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#wSize, #hSize {
+    width: 100px;
+}
+
+#titleBar {
+    background-color: #333333;
+    color: white;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 #clearImage {
-    display: none;
+    color: lightslategray;
+    border-color: lightslategray
 }
 
 .button {
@@ -52,4 +58,5 @@ header {
     background-color: #cccccc;
     border: 1px solid #000000;
     border-radius: 5px;
+    display: inline-block;
 }
