@@ -96,7 +96,9 @@ window.onload = function() {
             try {
                 img.onload = () => {
                     canvas.width = img.width;
+                    wSize.value = img.width;
                     canvas.height = img.height;
+                    hSize.value = img.height;
                 }
                 img.src = event.target.result;
 
