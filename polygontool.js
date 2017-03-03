@@ -220,7 +220,7 @@ window.onload = function() {
     }, false);
 
     // A right click cancels polygon in progress
-    ctx.canvas.addEventListener("contextmenu", (e) => {        
+    ctx.canvas.addEventListener("contextmenu", (e) => {     
         currentPolygon = [];
         polygonInProgress = false;
         e.preventDefault();
@@ -414,9 +414,27 @@ window.onload = function() {
         return (test1 > 0 && test1 < 1) && (test2 > 0 && test2 < 1);
     };
 
-    // TODO: Write a function to check if a point is inside a polygon
+    // Check if a point is inside a polygon
     const isPointInside = (polygon, point) => {
         const isInside = false;
+
+        // Run a ray from off-screen to a point and count the times it crosses sides
+        const origin = { x: -1, y: -1 };
+        let crossings = 0;
+
+        for (let i = 0; i < polygon.length; i++) {
+            let j = null;
+            i === polygon.length - 1 ? j = 0 : j = i+1;
+            if (segmentsCross(origin, point, polygon[i], polygon[j])) crossings++;
+        }
+
+        if (crossings === 0) {
+            return false;
+        } else if (crossings%2 === 0) {
+            return false;
+        } else {
+            return true;
+        }
     };
 
     /*---------------------------------------------*/
