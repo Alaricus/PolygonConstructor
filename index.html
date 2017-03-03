@@ -6,51 +6,31 @@
     </head>
     <body style="text-align: center;">
         <header>
-            <div id="selector">
-                Select drawing area initialization type:
-                <select id="initDrop">
-                    <option value=""></option>
-                    <option value="default">Default</option>
-                    <option value="dimensions">Enter Dimensions</option>
-                    <option value="upload">Upload Image</option>
-                </select>
-            </div>
+            Right-click to cancel a polygon in progress. - Use the "X" key to delete a vertex while dragging - Counterclockwise polygons are converted to clockwise. - Convex vertices are blue. - Concave vertices are red. - Simple polygons have blue sides. - Complex Polygons have red sides.
         </header>
         <main>
             <div id="controls">
-                <br>
+                <div id="titleBar">Controls</div>
+                <div id="imgUploadArea">
+                    <br>
+                    Drag an image file here to import.
+                </div>
+                W: <input type="number" min="1" value="800" id="wSize"> 
+                H: <input type="number" min="1" value="600" id="hSize">
+                <input type="button" id="resize" value="Resize">
+                <br><br>
                 <button class="button" id="clearSaved"></button>
                 <br><br>
                 <button class="button" id="clearImage">Clear Image</button>
-                <br>
-                <p>Right-click to cancel a polygon in progress.</p>
-                <p>Use the "X" button to delete a vertex you are dragging.</p>
-                <p>Counterclockwise polygons are converted to clockwise.</p>
-                <p>Convex vertices are blue.</p>
-                <p>Concave vertices are red.</p>
-                <p>Simple polygons have blue sides.</p>
-                <p>Complex Polygons have red sides.</p>
-                <br>
+                <br><br>
                 <a class="button" href="" id="export" download="polygons.json">Export Current Polygons</a>
                 <br><br>
-                <button class="button" id="import">Import Polygon JSON</button>
                 <div id="uploadArea">
                     <br>
-                    Drag a peviously exported file here.
+                    Drag an exported file here to import.
                 </div>
             </div>
             <div id="easel">
-                <div id="dimensions">
-                    <input type="number" min="1" value="800" id="wSize"> Width<br>
-                    <input type="number" min="1" value="600" id="hSize"> Height<br>
-                    <input type="button" id="setSize" value="Submit">
-                </div>
-                <div id="upload">
-                    <div id="imgUploadArea">
-                        <br>
-                        Drag an image file here.
-                    </div>
-                </div>
                 <canvas id="screen"></canvas>
             </div>
         </main>

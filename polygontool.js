@@ -11,64 +11,41 @@ window.onload = function() {
     const clearSaved = document.getElementById("clearSaved");
     const clearImage = document.getElementById("clearImage");
     const expo = document.getElementById("export");
-    const impo = document.getElementById("import");
     const uploadArea = document.getElementById("uploadArea");
     const imgUploadArea = document.getElementById("imgUploadArea");
-    const initDrop = document.getElementById("initDrop");
+    const hSize = document.getElementById("hSize");
+    const wSize = document.getElementById("wSize");
+    const resize = document.getElementById("resize");
     const img = new Image();
 
-    // The dropdown box for mode selection on start
-    initDrop.addEventListener("change", () => {
-        const controls = document.getElementById("controls");
-        switch(initDrop.value) {
-            case "default":
-                canvas.style.display = "inline";
-                canvas.width = 800;
-                canvas.height = 800;
-                controls.style.display = "inline-block";
-                break;
-            case "dimensions":
-                const dimensions = document.getElementById("dimensions");
-                const hSize = document.getElementById("hSize");
-                const wSize = document.getElementById("wSize");
-                const setSize = document.getElementById("setSize");
+    canvas.width = 800;
+    canvas.height = 600;
 
-                dimensions.style.display = "inline";
-
-                hSize.addEventListener("keypress", (e) => {                    
-                    if (e.charCode < 48) {
-                        console.log(e.charCode);
-                        e.preventDefault();
-                        return false;
-                    }
-                }, false);
-
-                wSize.addEventListener("keypress", (e) => {
-                    if (e.charCode < 48) {
-                        console.log(e.charCode);
-                        e.preventDefault();
-                        return false;
-                    }
-                }, false);
-
-                setSize.addEventListener("click", (e) => {
-                    if (hSize.value > 0 && wSize.value > 0) {
-                        canvas.style.display = "inline";
-                        canvas.width = wSize.value;
-                        canvas.height = hSize.value;
-                        controls.style.display = "inline-block";
-                        dimensions.style.display = "none";
-                    }                    
-                }, false);
-                break;
-            case "upload":
-                document.getElementById("upload").style.display = "inline";
-                imgUploadArea.style.display = "block";
-                imgUploadArea.style.width = "300px";
-                break;
+    // Does not allow entering negative numbers into height
+    hSize.addEventListener("keypress", (e) => {                    
+        if (e.charCode < 48) {
+            console.log(e.charCode);
+            e.preventDefault();
+            return false;
         }
-        document.getElementById("selector").style.display = "none";    
-    });
+    }, false);
+
+    // Does not allow entering negative numbers into width
+    wSize.addEventListener("keypress", (e) => {
+        if (e.charCode < 48) {
+            console.log(e.charCode);
+            e.preventDefault();
+            return false;
+        }
+    }, false);
+
+    // The Resize button
+    resize.addEventListener("click", (e) => {
+        if (hSize.value > 0 && wSize.value > 0) {
+            canvas.width = wSize.value;
+            canvas.height = hSize.value;
+        }                    
+    }, false);
 
     // Clear Saved Polygons button
     clearSaved.addEventListener("click", (e) => {
@@ -78,7 +55,8 @@ window.onload = function() {
     // Clear Image button
     clearImage.addEventListener("click", (e) => {
         img.src = "";
-        clearImage.style.display = "none";
+        clearImage.style.color = "lightslategray";
+        clearImage.style.borderColor = "lightslategray";
     }, false);   
 
     // Export Current Polygons button
@@ -94,23 +72,20 @@ window.onload = function() {
     // 1 of 4 drag and drop events for the image uploader
     imgUploadArea.addEventListener("dragenter", (e) => {
         e.preventDefault();
-        imgUploadArea.style.borderColor = "limegreen";
-        imgUploadArea.style.backgroundColor = "palegreen";
+        dragOverColorChange(imgUploadArea);
         return false;
     }, false);
 
     // 2 of 4 drag and drop events for the image uploader
     imgUploadArea.addEventListener("dragover", (e) => {
         e.preventDefault();
-        imgUploadArea.style.borderColor = "limegreen";
-        imgUploadArea.style.backgroundColor = "palegreen";
+        dragOverColorChange(imgUploadArea);
         return false;
     }, false);
 
     // 3 of 4 drag and drop events for the image uploader
     imgUploadArea.addEventListener("dragleave", (e) => {
-        imgUploadArea.style.borderColor = "dodgerblue";
-        imgUploadArea.style.backgroundColor = "white";
+        dragOutColorChange(imgUploadArea);
     }, false);
 
     // 4 of 4 drag and drop events for the image uploader
@@ -120,15 +95,14 @@ window.onload = function() {
         fr.onload = function(event) {
             try {
                 img.onload = () => {
-                    canvas.style.display = "inline";
                     canvas.width = img.width;
                     canvas.height = img.height;
-                    controls.style.display = "inline-block";
                 }
                 img.src = event.target.result;
 
                 uploadSuccess(imgUploadArea);
-                clearImage.style.display = "block";
+                clearImage.style.color = "black";
+                clearImage.style.borderColor = "black";
             } catch (err) {
                 uploadFailure(imgUploadArea);
             }
@@ -143,32 +117,23 @@ window.onload = function() {
 
     }, false);
 
-    // Import Polygon JSON button
-    impo.addEventListener("click", () => {
-        uploadArea.style.display = "block";
-        impo.style.display = "none";
-    });
-
     // 1 of 4 drag and drop events for the JSON uploader
     uploadArea.addEventListener("dragenter", (e) => {
         e.preventDefault();
-        uploadArea.style.borderColor = "limegreen";
-        uploadArea.style.backgroundColor = "palegreen";
+        dragOverColorChange(uploadArea);
         return false;
     }, false);
 
     // 2 of 4 drag and drop events for the JSON uploader
     uploadArea.addEventListener("dragover", (e) => {
         e.preventDefault();
-        uploadArea.style.borderColor = "limegreen";
-        uploadArea.style.backgroundColor = "palegreen";
+        dragOverColorChange(uploadArea);
         return false;
     }, false);
 
     // 3 of 4 drag and drop events for the JSON uploader
     uploadArea.addEventListener("dragleave", (e) => {
-        uploadArea.style.borderColor = "dodgerblue";
-        uploadArea.style.backgroundColor = "white";
+        dragOutColorChange(uploadArea);
     }, false);
 
     // 4 of 4 drag and drop events for the JSON uploader
@@ -216,27 +181,38 @@ window.onload = function() {
         });
     }, false);
 
-    // DOM changes on a sucessful upload of image or JSON
-    const uploadSuccess = (element) => {
-        element.style.display = "none";
-        element.style.borderColor = "dodgerblue";
-        element.style.backgroundColor = "white";
-        impo.style.display = "block";
+    // Change the CSS of upload areas when draging a file over
+    const dragOverColorChange = (element) => {
+        element.style.borderColor = "limegreen";
+        element.style.backgroundColor = "palegreen";
     }
 
-    // DOM changes on a failed upload of image or JSON
+    // Reset the CSS of upload areas when draging a file away
+    const dragOutColorChange = (emelemt) => {
+        emelemt.style.borderColor = "dodgerblue";
+        emelemt.style.backgroundColor = "white";
+    }
+
+    // CSS changes on a sucessful upload of image or JSON
+    const uploadSuccess = (element) => {
+        element.style.borderColor = "dodgerblue";
+        element.style.backgroundColor = "white";
+    }
+
+    // CSS changes on a failed upload of image or JSON
     const uploadFailure = (element) => {
         element.style.display = "block";
         element.style.borderColor = "red";
         element.style.backgroundColor = "pink";
-        impo.style.display = "none";
         element.innerHTML = `<br>Wrong file type or corrupted file.<br><br>Try again.`;
     }
 
+    // When the mouse moves, grab the coordinates
     ctx.canvas.addEventListener("mousemove", (e) => {
         mouseData = getMouseData(ctx.canvas, e);
     }, false);
 
+    // When a mouse left-clicks check if there's already a vertex there
     ctx.canvas.addEventListener("mousedown", (e) => {
         checkForVertex(mouseData);
     }, false);
@@ -249,6 +225,7 @@ window.onload = function() {
         return false;
     }, false);
 
+    // When letting of of the left mouse button after a click
     ctx.canvas.addEventListener("mouseup", (e) => {
         if (selectedPoint !== null || keyUsed) {
             selectedPoint = null;
@@ -257,6 +234,7 @@ window.onload = function() {
             keyUsed = false;
         } else {
             switch(checkForVertex(mouseData)) {
+                // If clicking on the starting point of polygon - save the polygon
                 case "savePolygon":
                     // Check if the polygon being saved is clockwise
                     if (!isClockwise(currentPolygon)) {
@@ -267,6 +245,7 @@ window.onload = function() {
                     currentPolygon = [];
                     polygonInProgress = false;
                     break;
+                // If clicking on an empty area - place a vertex
                 case "place":
                     polygonInProgress = true;
                     currentPolygon.push({x: mouseData.x, y: mouseData.y});
@@ -287,11 +266,16 @@ window.onload = function() {
         }
     });
 
-    /*-------------------------------------------------*/
-    // Function related to actual polygon calculations //
-    /*-------------------------------------------------*/
+    /*--------------------------------------------------*/
+    // Functions related to actual polygon calculations //
+    /*--------------------------------------------------*/
 
     let mouseData = {};
+    let allPolygons = [];
+    let currentPolygon = []; 
+    let polygonInProgress = false;
+    let selectedPoint = null;
+    let keyUsed = false;
 
     let polygonsMatch = (poly1, poly2) => {
         if (poly1.length !== poly2.length) { return false; }
@@ -432,12 +416,6 @@ window.onload = function() {
     const isPointInside = (polygon, point) => {
         const isInside = false;
     };
-
-    let allPolygons = [];
-    let currentPolygon = []; 
-    let polygonInProgress = false;
-    let selectedPoint = null;
-    let keyUsed = false;
 
     /*---------------------------------------------*/
     // Rendeting functions: Main, Update, and Draw //
