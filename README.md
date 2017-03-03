@@ -3,6 +3,8 @@ A polygon construction tool.
 
 This is a tool I wrote to help me with an adventure game engine I'm working on. I use it to define polygons that can be used for walkable areas to which a character is restricted.
 
+![alt tag](http://www.alaric.us/adventure/tools/polygontool/sample.png)
+
 Features:
 
 * Can choose either a default canvas size or a custom one.
