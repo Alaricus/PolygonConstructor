@@ -33,11 +33,15 @@ header {
     vertical-align: top;
 }
 
-#uploadArea {
+#uploadArea, #imgUploadArea {
     display: none;
     border: 3px dashed dodgerblue;
     height: 200px;
     text-align: center;
+}
+
+#clearImage {
+    display: none;
 }
 
 .button {

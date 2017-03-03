@@ -2,13 +2,24 @@
 
 window.onload = function() {
 
-    let canvas = document.getElementById("screen")
-    let ctx = canvas.getContext("2d");
-    let mouseData;
+    /*-----------------------------------------------------*/
+    // HTML elements and interface-related event listeners //
+    /*-----------------------------------------------------*/
 
-    let initDrop = document.getElementById("initDrop");
+    const canvas = document.getElementById("screen")
+    const ctx = canvas.getContext("2d");
+    const clearSaved = document.getElementById("clearSaved");
+    const clearImage = document.getElementById("clearImage");
+    const expo = document.getElementById("export");
+    const impo = document.getElementById("import");
+    const uploadArea = document.getElementById("uploadArea");
+    const imgUploadArea = document.getElementById("imgUploadArea");
+    const initDrop = document.getElementById("initDrop");
+    const img = new Image();
+
+    // The dropdown box for mode selection on start
     initDrop.addEventListener("change", () => {
-        let controls = document.getElementById("controls");
+        const controls = document.getElementById("controls");
         switch(initDrop.value) {
             case "default":
                 canvas.style.display = "inline";
@@ -17,10 +28,10 @@ window.onload = function() {
                 controls.style.display = "inline-block";
                 break;
             case "dimensions":
-                let dimensions = document.getElementById("dimensions");
-                let hSize = document.getElementById("hSize");
-                let wSize = document.getElementById("wSize");
-                let setSize = document.getElementById("setSize");
+                const dimensions = document.getElementById("dimensions");
+                const hSize = document.getElementById("hSize");
+                const wSize = document.getElementById("wSize");
+                const setSize = document.getElementById("setSize");
 
                 dimensions.style.display = "inline";
 
@@ -52,15 +63,175 @@ window.onload = function() {
                 break;
             case "upload":
                 document.getElementById("upload").style.display = "inline";
-                // TODO: Add the code for uploading an image and setting the size
+                imgUploadArea.style.display = "block";
+                imgUploadArea.style.width = "300px";
                 break;
         }
         document.getElementById("selector").style.display = "none";    
     });
 
-    document.getElementById("clearsaved").addEventListener("click", (e) => {
+    // Clear Saved Polygons button
+    clearSaved.addEventListener("click", (e) => {
         allPolygons = [];
     }, false);
+
+    // Clear Image button
+    clearImage.addEventListener("click", (e) => {
+        img.src = "";
+        clearImage.style.display = "none";
+    }, false);   
+
+    // Export Current Polygons button
+    expo.addEventListener("click", (e) => {
+        if (allPolygons.length > 0) {
+            const dataURL = JSON.stringify({canvas: {w: canvas.width, h: canvas.height}, polygons: allPolygons});
+            expo.href = "data:text/json;charset=utf-8," + encodeURIComponent(dataURL);
+        } else {
+            e.preventDefault();
+        }
+    });
+    
+    // 1 of 4 drag and drop events for the image uploader
+    imgUploadArea.addEventListener("dragenter", (e) => {
+        e.preventDefault();
+        imgUploadArea.style.borderColor = "limegreen";
+        imgUploadArea.style.backgroundColor = "palegreen";
+        return false;
+    }, false);
+
+    // 2 of 4 drag and drop events for the image uploader
+    imgUploadArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        imgUploadArea.style.borderColor = "limegreen";
+        imgUploadArea.style.backgroundColor = "palegreen";
+        return false;
+    }, false);
+
+    // 3 of 4 drag and drop events for the image uploader
+    imgUploadArea.addEventListener("dragleave", (e) => {
+        imgUploadArea.style.borderColor = "dodgerblue";
+        imgUploadArea.style.backgroundColor = "white";
+    }, false);
+
+    // 4 of 4 drag and drop events for the image uploader
+    imgUploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const fr = new FileReader();
+        fr.onload = function(event) {
+            try {
+                img.onload = () => {
+                    canvas.style.display = "inline";
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    controls.style.display = "inline-block";
+                }
+                img.src = event.target.result;
+
+                uploadSuccess(imgUploadArea);
+                clearImage.style.display = "block";
+            } catch (err) {
+                uploadFailure(imgUploadArea);
+            }
+        }
+        // Only accept images and only use the first file if several are dragged
+        const file = e.dataTransfer.files[0];
+        if (file.type === "image/jpeg" || file.type === "image/png" || file.type === "image/gif") {
+            fr.readAsDataURL(file);
+        } else {
+            uploadFailure(imgUploadArea);
+        }
+
+    }, false);
+
+    // Import Polygon JSON button
+    impo.addEventListener("click", () => {
+        uploadArea.style.display = "block";
+        impo.style.display = "none";
+    });
+
+    // 1 of 4 drag and drop events for the JSON uploader
+    uploadArea.addEventListener("dragenter", (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = "limegreen";
+        uploadArea.style.backgroundColor = "palegreen";
+        return false;
+    }, false);
+
+    // 2 of 4 drag and drop events for the JSON uploader
+    uploadArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = "limegreen";
+        uploadArea.style.backgroundColor = "palegreen";
+        return false;
+    }, false);
+
+    // 3 of 4 drag and drop events for the JSON uploader
+    uploadArea.addEventListener("dragleave", (e) => {
+        uploadArea.style.borderColor = "dodgerblue";
+        uploadArea.style.backgroundColor = "white";
+    }, false);
+
+    // 4 of 4 drag and drop events for the JSON uploader
+    uploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        let maxW = 0;
+        let maxH = 0;
+        let error = false;
+        // Borrowing an array method to iterate through these files.
+        Array.prototype.forEach.call(e.dataTransfer.files, (item) => {
+            const fr = new FileReader();
+            fr.onload = function(event) {
+                try {
+                    // If there was an error in one of the previous files, stop the rest
+                    if (error) { throw "Had an error in a previous file." }
+                    const importedData = JSON.parse(event.target.result);
+                    // Using the largest of all imported files' canvas dimensions to merge all files
+                    if (importedData.canvas.w > maxW) {
+                        canvas.width = importedData.canvas.w;
+                        maxW = importedData.canvas.w;
+                    }
+                    if (importedData.canvas.h > maxH) {
+                        canvas.height = importedData.canvas.h;
+                        maxH = importedData.canvas.h;
+                    }
+
+                    importedData.polygons.forEach((newPoly) => {
+                        // If even one matches, the whole thing stops and returns true
+                        const match = allPolygons.some((existingPoly) => {
+                            return polygonsMatch(existingPoly, newPoly);
+                        }); 
+                        
+                        if (!match) {
+                            allPolygons.push(newPoly);
+                        }
+                    });
+
+                    uploadSuccess(uploadArea);
+                } catch (err) {
+                    uploadFailure(uploadArea);
+                    error = true;
+                }
+            }
+            fr.readAsText(item);
+        });
+    }, false);
+
+    // DOM changes on a sucessful upload of image or JSON
+    const uploadSuccess = (element) => {
+        element.style.display = "none";
+        element.style.borderColor = "dodgerblue";
+        element.style.backgroundColor = "white";
+        impo.style.display = "block";
+    }
+
+    // DOM changes on a failed upload of image or JSON
+    const uploadFailure = (element) => {
+        element.style.display = "block";
+        element.style.borderColor = "red";
+        element.style.backgroundColor = "pink";
+        impo.style.display = "none";
+        element.innerHTML = `<br>Wrong file type or corrupted file.<br><br>Try again.`;
+    }
 
     ctx.canvas.addEventListener("mousemove", (e) => {
         mouseData = getMouseData(ctx.canvas, e);
@@ -70,7 +241,7 @@ window.onload = function() {
         checkForVertex(mouseData);
     }, false);
 
-    // A right click cancels polygon in progress.
+    // A right click cancels polygon in progress
     ctx.canvas.addEventListener("contextmenu", (e) => {        
         currentPolygon = [];
         polygonInProgress = false;
@@ -87,7 +258,7 @@ window.onload = function() {
         } else {
             switch(checkForVertex(mouseData)) {
                 case "savePolygon":
-                    // Check if the polygon being saved is clockwise.
+                    // Check if the polygon being saved is clockwise
                     if (!isClockwise(currentPolygon)) {
                         // If not, make it clockwise
                         currentPolygon.reverse();
@@ -104,6 +275,7 @@ window.onload = function() {
         }
     }, false);
 
+    // Press event for the "X" key to delete a vertex being dragged
     document.addEventListener("keypress", (e) => { 
         // delete a point unless a polygon is a triangle, because we can't have
         // a polygon with less then 3 vertices
@@ -115,110 +287,29 @@ window.onload = function() {
         }
     });
 
-    let expo = document.getElementById("export");
-    expo.addEventListener("click", (e) => {
-        if (allPolygons.length > 0) {
-            let dataURL = JSON.stringify({canvas: {w: canvas.width, h: canvas.height}, polygons: allPolygons});
-            expo.href = "data:text/json;charset=utf-8," + encodeURIComponent(dataURL);
-        } else {
-            e.preventDefault();
-        }
-    });
+    /*-------------------------------------------------*/
+    // Function related to actual polygon calculations //
+    /*-------------------------------------------------*/
 
-    let impo = document.getElementById("import");
-    impo.addEventListener("click", () => {
-        document.getElementById("uploadArea").style.display = "block";
-        impo.style.display = "none";
-    });
-
-    let uploadArea = document.getElementById("uploadArea");
-
-    uploadArea.addEventListener("dragenter", (e) => {
-        e.preventDefault();
-        uploadArea.style.borderColor = "limegreen";
-        uploadArea.style.backgroundColor = "palegreen";
-        return false;
-    }, false);
-
-    uploadArea.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        uploadArea.style.borderColor = "limegreen";
-        uploadArea.style.backgroundColor = "palegreen";
-        return false;
-    }, false);
-
-    uploadArea.addEventListener("dragleave", (e) => {
-        uploadArea.style.borderColor = "dodgerblue";
-        uploadArea.style.backgroundColor = "white";
-    }, false);
-
-    uploadArea.addEventListener("drop", (e) => {
-        e.preventDefault();
-        let maxW = 0;
-        let maxH = 0;
-        let error = false;
-        // Borrowing an array method to iterate through these files.
-        Array.prototype.forEach.call(e.dataTransfer.files, (item) => {
-            let fr = new FileReader();
-            fr.onload = function(event) {
-                try {
-                    if (error) { throw "Had an error in a previous file." }
-                    let importedData = JSON.parse(event.target.result);
-                    // Using the largest of all imported files' canvas dimensions to merge all files
-                    if (importedData.canvas.w > maxW) {
-                        canvas.width = importedData.canvas.w;
-                        maxW = importedData.canvas.w;
-                    }
-                    if (importedData.canvas.h > maxH) {
-                        canvas.height = importedData.canvas.h;
-                        maxH = importedData.canvas.h;
-                    }
-
-                    importedData.polygons.forEach((newPoly) => {
-                        // If even one matches, the whole thing stops and returns true.
-                        let match = allPolygons.some((existingPoly) => {
-                            return polygonsMatch(existingPoly, newPoly);
-                        }); 
-                        
-                        if (!match) {
-                            allPolygons.push(newPoly);
-                        }
-                    });
-
-                    uploadArea.style.display = "none";
-                    uploadArea.style.borderColor = "dodgerblue";
-                    uploadArea.style.backgroundColor = "white";
-                    impo.style.display = "block";
-                } catch (err) {
-                    uploadArea.style.display = "block";
-                    uploadArea.style.borderColor = "red";
-                    uploadArea.style.backgroundColor = "pink";
-                    impo.style.display = "none";
-                    uploadArea.innerHTML = `<br>Wrong file type or corrupted file.<br><br>Try again.`;
-                    error = true;
-                }
-            }
-            fr.readAsText(item);
-        });
-    }, false);
+    let mouseData = {};
 
     let polygonsMatch = (poly1, poly2) => {
         if (poly1.length !== poly2.length) { return false; }
-        // If even one doesn't match, the whole thing stops and returns false.
+        // If even one doesn't match, the whole thing stops and returns false
         return poly1.every((item, index) => {
             return item.x === poly2[index].x && item.y === poly2[index].y;
         });
     };
 
-    let getMouseData = (canv, e) => {
-        let rect = canv.getBoundingClientRect();
+    const getMouseData = (canv, e) => {
+        const rect = canv.getBoundingClientRect();
         return {
             x: e.clientX - rect.left,
             y: e.clientY - rect.top
         };
     };
 
-    let checkForVertex = (coords) => {
+    const checkForVertex = (coords) => {
         // first check all vertices in allPolygons
         for (let i = 0; i < allPolygons.length; i++) {
             for (let j = 0; j < allPolygons[i].length; j++) {
@@ -257,7 +348,7 @@ window.onload = function() {
         return "place"
     };
 
-    let isClockwise = (vertices) => {
+    const isClockwise = (vertices) => {
         // Using the shoelace formula
         let xx = 0;
         let yy = 0;
@@ -277,25 +368,25 @@ window.onload = function() {
         return false;
     };
 
-    let isConcave = (vertices, vertex) => {
-        let prev = vertices[vertex === 0 ? vertices.length - 1 : vertex - 1];
-        let curr = vertices[vertex];
-        let next = vertices[(vertex + 1) % vertices.length];
+    const isConcave = (vertices, vertex) => {
+        const prev = vertices[vertex === 0 ? vertices.length - 1 : vertex - 1];
+        const curr = vertices[vertex];
+        const next = vertices[(vertex + 1) % vertices.length];
         // convert the side of the polygon from "prev" to "curr" into a vector (origin to "vector1")
-        let vector1 = { x: curr.x - prev.x, y: curr.y - prev.y };
+        const vector1 = { x: curr.x - prev.x, y: curr.y - prev.y };
         // convert the side of the polygon from "curr" to "next" into a vector (origin to "vector2")
-        let vector2 = { x: next.x - curr.x, y: next.y - curr.y };
+        const vector2 = { x: next.x - curr.x, y: next.y - curr.y };
         // get a cross product of the two vectors
         // A cross product is a 3D vector (not a scalar) and in this case we have the z-axis be 0
         // so both vectors look like this: (value, value, 0). Because both vectors are flat on a
         // plane, the cross product looks like this: (0, 0, value) it's perpendicular to both of
         // them by being perfectly vertical and can go either above that plane or below it. If
         // the z value is positive the angle is convex, and if it is negative it is concave.
-        let zCrossProduct = (vector1.x * vector2.y) - (vector1.y * vector2.x);
+        const zCrossProduct = (vector1.x * vector2.y) - (vector1.y * vector2.x);
         return zCrossProduct < 0;
     };
 
-    let isComplex = (polygon) => {
+    const isComplex = (polygon) => {
         // This compares each side of a polygon to each of its other sides. If a cross exists
         // then it's a complex polygon. If that's the case it shouldn't be used.
         let crossExists = false;
@@ -311,16 +402,16 @@ window.onload = function() {
         return crossExists;
     };   
 
-    let segmentsCross = (A, B, C, D) => {
-        let crossProductABCD = ((B.x - A.x) * (D.y - C.y)) - ((B.y - A.y) * (D.x - C.x));
+    const segmentsCross = (A, B, C, D) => {
+        const crossProductABCD = ((B.x - A.x) * (D.y - C.y)) - ((B.y - A.y) * (D.x - C.x));
         
         // vectors AB and CD are parallel
         if (crossProductABCD == 0) {
             return false;
         }
     
-        let crossProductACDC = ((A.y - C.y) * (D.x - C.x)) - ((A.x - C.x) * (D.y - C.y)); 
-        let crossProductABAC = ((A.y - C.y) * (B.x - A.x)) - ((A.x - C.x) * (B.y - A.y));
+        const crossProductACDC = ((A.y - C.y) * (D.x - C.x)) - ((A.x - C.x) * (D.y - C.y)); 
+        const crossProductABAC = ((A.y - C.y) * (B.x - A.x)) - ((A.x - C.x) * (B.y - A.y));
         
         // vectors AC and DC (or BA and AC) touch only at endpoints
         // so in one case there is no B and in another no D
@@ -331,15 +422,15 @@ window.onload = function() {
         // all other cases must be between 0 and a crossProduct of BADC
         // so since neither is equal to 0 we divide by the crossProduct
         // of BADC to make sure they aren't equal as (value / itself = 1)
-        let test1 = crossProductACDC / crossProductABCD;
-        let test2 = crossProductABAC / crossProductABCD;
+        const test1 = crossProductACDC / crossProductABCD;
+        const test2 = crossProductABAC / crossProductABCD;
         
         return (test1 > 0 && test1 < 1) && (test2 > 0 && test2 < 1);
     };
 
     // TODO: Write a function to check if a point is inside a polygon
-    let isPointInside = (polygon, point) => {
-        let isInside = false;
+    const isPointInside = (polygon, point) => {
+        const isInside = false;
     };
 
     let allPolygons = [];
@@ -348,8 +439,20 @@ window.onload = function() {
     let selectedPoint = null;
     let keyUsed = false;
 
-    let draw = () => {
+    /*---------------------------------------------*/
+    // Rendeting functions: Main, Update, and Draw //
+    /*---------------------------------------------*/
+
+    const draw = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // In case an image was uploaded
+        if (img.src !== "") {
+            ctx.globalAlpha = 0.25;
+            ctx.drawImage(img, 0, 0);
+            ctx.globalAlpha = 1;
+        }
+
         // Draw the vertices and connecting lines of the polygon currently being built
         if (polygonInProgress && selectedPoint === null) {
             for (let i = 0; i < currentPolygon.length; i++) {
@@ -389,7 +492,8 @@ window.onload = function() {
                 }
                 
                 // Draw vertices
-                ctx.fillRect(allPolygons[i][j].x - 4, allPolygons[i][j].y - 4, 9, 9); 
+                ctx.fillRect(allPolygons[i][j].x - 4, allPolygons[i][j].y - 4, 9, 9);
+
                 // Draw surfaces      
                 if (j > 0) {    
                     ctx.beginPath();
@@ -405,15 +509,15 @@ window.onload = function() {
         }        
     };
 
-    let update = () => {
-        document.getElementById("clearsaved").innerHTML = `Clear Saved Polygons (${allPolygons.length})`;
+    const update = () => {
+        clearSaved.innerHTML = `Clear Saved Polygons (${allPolygons.length})`;
         if (selectedPoint !== null) {
             allPolygons[selectedPoint.poly][selectedPoint.vert].x = mouseData.x;
             allPolygons[selectedPoint.poly][selectedPoint.vert].y = mouseData.y;
         }
     }
 
-    let main = () => {
+    const main = () => {
         update();
         draw();
         requestAnimationFrame(main);

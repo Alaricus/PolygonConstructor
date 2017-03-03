@@ -6,6 +6,7 @@ This is a tool I wrote to help me with an adventure game engine I'm working on. 
 Features:
 
 * Can choose either a default canvas size or a custom one.
+* Can import an image as background and to establish canvas dimensions.
 * Can construct polygons by placing vertices.
 * Can close a polygon in progress by clicking on the starting vertex.
     (Only works if there are at least 3 existing vertices.)
@@ -18,12 +19,10 @@ Features:
 * JSON files can be imported via drag and drop.
 * Multiple files can be imported to display all of the polygons they contain.
 * Imports can be done either file by file, or several files at a time.
-* Polygons identical to previously drawn or imported will be ignored. 
+* Polygons identical to previously drawn or imported ones will be ignored. 
 
 Planned features:
 
-* Ability to import an image and use its size/proportions to establish canvas dimensions.
 * Record all coordinates as relative to allow for the scaling of game's window.
-* Check imported JSON for validity.
 * Drag and drop entire polygons.
 * Delete entire polygons.
