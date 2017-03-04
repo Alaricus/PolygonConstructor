@@ -3,11 +3,6 @@ body {
     font-size: 0.85em;
 }
 
-header {
-    margin-bottom: 20px;
-    font-size: 0.85em;
-}
-
 #easel {
     text-align: left;
     vertical-align: top;
@@ -60,4 +55,10 @@ header {
     border: 1px solid #000000;
     border-radius: 5px;
     display: inline-block;
+}
+
+ul {
+    margin-top: 30px;
+    margin-left: -20px;
+    font-size: 0.90em;
 }
