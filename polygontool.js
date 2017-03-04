@@ -156,10 +156,12 @@ window.onload = function() {
                     if (importedData.canvas.w > maxW) {
                         canvas.width = importedData.canvas.w;
                         maxW = importedData.canvas.w;
+                        wSize.value = importedData.canvas.w;
                     }
                     if (importedData.canvas.h > maxH) {
                         canvas.height = importedData.canvas.h;
                         maxH = importedData.canvas.h;
+                        hSize.value = importedData.canvas.h;
                     }
 
                     importedData.polygons.forEach((newPoly) => {
@@ -424,13 +426,13 @@ window.onload = function() {
 
         for (let i = 0; i < polygon.length; i++) {
             let j = null;
-            i === polygon.length - 1 ? j = 0 : j = i+1;
+            i === polygon.length - 1 ? j = 0 : j = i + 1;
             if (segmentsCross(origin, point, polygon[i], polygon[j])) crossings++;
         }
 
         if (crossings === 0) {
             return false;
-        } else if (crossings%2 === 0) {
+        } else if (crossings % 2 === 0) {
             return false;
         } else {
             return true;

@@ -5,9 +5,6 @@
         <link href="styles.css" rel="stylesheet" type="text/css" />
     </head>
     <body style="text-align: center;">
-        <header>
-            Right-click to cancel a polygon in progress. - Use the "X" key to delete a vertex while dragging - Counterclockwise polygons are converted to clockwise. - Convex vertices are blue. - Concave vertices are red. - Simple polygons have blue sides. - Complex Polygons have red sides.
-        </header>
         <main>
             <div id="controls">
                 <div id="titleBar">Controls</div>
@@ -29,6 +26,15 @@
                     <br>
                     Drag an exported file here to import.
                 </div>
+                <ul>
+                    <li>Right-click to cancel a polygon in progress.</li>
+                    <li>Use the "X" key to delete a vertex while dragging.</li>
+                    <li>Counterclockwise polygons are converted to clockwise.</li>
+                    <li>Convex vertices are blue.</li>
+                    <li>Concave vertices are red.</li>
+                    <li>Simple polygons have blue sides.</li>
+                    <li>Complex Polygons have red sides.</li>
+                </ul>
             </div>
             <div id="easel">
                 <canvas id="screen"></canvas>
