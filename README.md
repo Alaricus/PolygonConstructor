@@ -1,15 +1,15 @@
 # PolygonConstructor
-A polygon construction tool.
+### A polygon construction tool.
 
 This is a tool I wrote to help me with an adventure game engine I'm working on. I use it to define polygons that can be used for walkable areas to which a character is restricted.
 
 ![alt tag](http://www.alaric.us/adventure/tools/polygontool/sample3-4-17.png)
 
-Demo:
+### Demo:
 
 [PolygonConstructor Demo](http://www.alaric.us/adventure/tools/polygontool/)
 
-Features:
+### Features:
 
 * Can choose either a default canvas size or a custom one.
 * Can import an image as background and to establish canvas dimensions.
@@ -27,7 +27,7 @@ Features:
 * Imports can be done either file by file, or several files at a time.
 * Polygons identical to previously drawn or imported ones will be ignored. 
 
-Planned features:
+### Planned features:
 
 * Record all coordinates as relative to allow for the scaling of game's window.
 * Drag and drop entire polygons.
