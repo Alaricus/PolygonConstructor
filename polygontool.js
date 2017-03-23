@@ -21,25 +21,23 @@ window.onload = function() {
     canvas.width = 800;
     canvas.height = 600;
 
-    // Does not allow entering negative numbers into height
+    // Does not allow entering negative numbers into height.
     hSize.addEventListener("keypress", (e) => {                    
         if (e.charCode < 48) {
-            console.log(e.charCode);
             e.preventDefault();
             return false;
         }
     }, false);
 
-    // Does not allow entering negative numbers into width
+    // Does not allow entering negative numbers into width.
     wSize.addEventListener("keypress", (e) => {
         if (e.charCode < 48) {
-            console.log(e.charCode);
             e.preventDefault();
             return false;
         }
     }, false);
 
-    // The Resize button
+    // The Resize button.
     resize.addEventListener("click", (e) => {
         if (hSize.value > 0 && wSize.value > 0) {
             canvas.width = wSize.value;
@@ -47,19 +45,19 @@ window.onload = function() {
         }                    
     }, false);
 
-    // Clear Saved Polygons button
+    // Clear Saved Polygons button.
     clearSaved.addEventListener("click", (e) => {
         allPolygons = [];
     }, false);
 
-    // Clear Image button
+    // Clear Image button.
     clearImage.addEventListener("click", (e) => {
         img.src = "";
         clearImage.style.color = "lightslategray";
         clearImage.style.borderColor = "lightslategray";
     }, false);   
 
-    // Export Current Polygons button
+    // Export Current Polygons button.
     expo.addEventListener("click", (e) => {
         if (allPolygons.length > 0) {
             const dataURL = JSON.stringify({canvas: {w: canvas.width, h: canvas.height}, polygons: allPolygons});
@@ -69,26 +67,26 @@ window.onload = function() {
         }
     });
     
-    // 1 of 4 drag and drop events for the image uploader
+    // 1 of 4 drag and drop events for the image uploader.
     imgUploadArea.addEventListener("dragenter", (e) => {
         e.preventDefault();
         dragOverColorChange(imgUploadArea);
         return false;
     }, false);
 
-    // 2 of 4 drag and drop events for the image uploader
+    // 2 of 4 drag and drop events for the image uploader.
     imgUploadArea.addEventListener("dragover", (e) => {
         e.preventDefault();
         dragOverColorChange(imgUploadArea);
         return false;
     }, false);
 
-    // 3 of 4 drag and drop events for the image uploader
+    // 3 of 4 drag and drop events for the image uploader.
     imgUploadArea.addEventListener("dragleave", (e) => {
         dragOutColorChange(imgUploadArea);
     }, false);
 
-    // 4 of 4 drag and drop events for the image uploader
+    // 4 of 4 drag and drop events for the image uploader.
     imgUploadArea.addEventListener("drop", (e) => {
         e.preventDefault();
         const fr = new FileReader();
@@ -109,7 +107,7 @@ window.onload = function() {
                 uploadFailure(imgUploadArea);
             }
         }
-        // Only accept images and only use the first file if several are dragged
+        // Only accept images and only use the first file if several are dragged.
         const file = e.dataTransfer.files[0];
         if (file.type === "image/jpeg" || file.type === "image/png" || file.type === "image/gif") {
             fr.readAsDataURL(file);
@@ -119,26 +117,26 @@ window.onload = function() {
 
     }, false);
 
-    // 1 of 4 drag and drop events for the JSON uploader
+    // 1 of 4 drag and drop events for the JSON uploader.
     uploadArea.addEventListener("dragenter", (e) => {
         e.preventDefault();
         dragOverColorChange(uploadArea);
         return false;
     }, false);
 
-    // 2 of 4 drag and drop events for the JSON uploader
+    // 2 of 4 drag and drop events for the JSON uploader.
     uploadArea.addEventListener("dragover", (e) => {
         e.preventDefault();
         dragOverColorChange(uploadArea);
         return false;
     }, false);
 
-    // 3 of 4 drag and drop events for the JSON uploader
+    // 3 of 4 drag and drop events for the JSON uploader.
     uploadArea.addEventListener("dragleave", (e) => {
         dragOutColorChange(uploadArea);
     }, false);
 
-    // 4 of 4 drag and drop events for the JSON uploader
+    // 4 of 4 drag and drop events for the JSON uploader.
     uploadArea.addEventListener("drop", (e) => {
         e.preventDefault();
         let maxW = 0;
@@ -149,10 +147,10 @@ window.onload = function() {
             const fr = new FileReader();
             fr.onload = function(event) {
                 try {
-                    // If there was an error in one of the previous files, stop the rest
+                    // If there was an error in one of the previous files, stop the rest.
                     if (error) { throw "Had an error in a previous file." }
                     const importedData = JSON.parse(event.target.result);
-                    // Using the largest of all imported files' canvas dimensions to merge all files
+                    // Using the largest of all imported files' canvas dimensions to merge all files.
                     if (importedData.canvas.w > maxW) {
                         canvas.width = importedData.canvas.w;
                         maxW = importedData.canvas.w;
@@ -165,7 +163,7 @@ window.onload = function() {
                     }
 
                     importedData.polygons.forEach((newPoly) => {
-                        // If even one matches, the whole thing stops and returns true
+                        // If even one matches, the whole thing stops and returns true.
                         const match = allPolygons.some((existingPoly) => {
                             return polygonsMatch(existingPoly, newPoly);
                         }); 
@@ -185,25 +183,25 @@ window.onload = function() {
         });
     }, false);
 
-    // Change the CSS of upload areas when draging a file over
+    // Change the CSS of upload areas when draging a file over.
     const dragOverColorChange = (element) => {
         element.style.borderColor = "limegreen";
         element.style.backgroundColor = "palegreen";
     }
 
-    // Reset the CSS of upload areas when draging a file away
+    // Reset the CSS of upload areas when draging a file away.
     const dragOutColorChange = (emelemt) => {
         emelemt.style.borderColor = "dodgerblue";
         emelemt.style.backgroundColor = "white";
     }
 
-    // CSS changes on a sucessful upload of image or JSON
+    // CSS changes on a sucessful upload of image or JSON.
     const uploadSuccess = (element) => {
         element.style.borderColor = "dodgerblue";
         element.style.backgroundColor = "white";
     }
 
-    // CSS changes on a failed upload of image or JSON
+    // CSS changes on a failed upload of image or JSON.
     const uploadFailure = (element) => {
         element.style.display = "block";
         element.style.borderColor = "red";
@@ -211,17 +209,17 @@ window.onload = function() {
         element.innerHTML = `<br>Wrong file type or corrupted file.<br><br>Try again.`;
     }
 
-    // When the mouse moves, grab the coordinates
+    // When the mouse moves, grab the coordinates.
     ctx.canvas.addEventListener("mousemove", (e) => {
         mouseData = getMouseData(ctx.canvas, e);
     }, false);
 
-    // When a mouse left-clicks check if there's already a vertex there
+    // When a mouse left-clicks check if there's already a vertex there.
     ctx.canvas.addEventListener("mousedown", (e) => {
         checkForVertex(mouseData);
     }, false);
 
-    // A right click cancels polygon in progress
+    // A right click cancels polygon in progress.
     ctx.canvas.addEventListener("contextmenu", (e) => {     
         currentPolygon = [];
         polygonInProgress = false;
@@ -229,7 +227,7 @@ window.onload = function() {
         return false;
     }, false);
 
-    // When letting of of the left mouse button after a click
+    // When letting of of the left mouse button after a click.
     ctx.canvas.addEventListener("mouseup", (e) => {
         if (selectedPoint !== null || keyUsed) {
             selectedPoint = null;
@@ -238,18 +236,18 @@ window.onload = function() {
             keyUsed = false;
         } else {
             switch(checkForVertex(mouseData)) {
-                // If clicking on the starting point of polygon - save the polygon
+                // If clicking on the starting point of polygon - save the polygon.
                 case "savePolygon":
-                    // Check if the polygon being saved is clockwise
+                    // Check if the polygon being saved is clockwise.
                     if (!isClockwise(currentPolygon)) {
-                        // If not, make it clockwise
+                        // If not, make it clockwise.
                         currentPolygon.reverse();
                     }
                     allPolygons.push(currentPolygon);
                     currentPolygon = [];
                     polygonInProgress = false;
                     break;
-                // If clicking on an empty area - place a vertex
+                // If clicking on an empty area - place a vertex.
                 case "place":
                     polygonInProgress = true;
                     currentPolygon.push({x: mouseData.x, y: mouseData.y});
@@ -258,9 +256,9 @@ window.onload = function() {
         }
     }, false);
 
-    // Press event for the "X" key to delete a vertex being dragged
+    // Press event for the "X" key to delete a vertex being dragged.
     document.addEventListener("keypress", (e) => { 
-        // delete a point unless a polygon is a triangle, because we can't have
+        // Delete a point unless a polygon is a triangle, because we can't have.
         // a polygon with less then 3 vertices
         if (selectedPoint !== null && allPolygons[selectedPoint.poly].length > 3 
                 && e.keyCode === 120) { // the X key
@@ -281,9 +279,9 @@ window.onload = function() {
     let selectedPoint = null;
     let keyUsed = false;
 
-    let polygonsMatch = (poly1, poly2) => {
+    const polygonsMatch = (poly1, poly2) => {
         if (poly1.length !== poly2.length) { return false; }
-        // If even one doesn't match, the whole thing stops and returns false
+        // If even one doesn't match, the whole thing stops and returns false.
         return poly1.every((item, index) => {
             return item.x === poly2[index].x && item.y === poly2[index].y;
         });
@@ -298,33 +296,32 @@ window.onload = function() {
     };
 
     const checkForVertex = (coords) => {
-        // first check all vertices in allPolygons
-        for (let i = 0; i < allPolygons.length; i++) {
-            for (let j = 0; j < allPolygons[i].length; j++) {
-                if (coords.x >= allPolygons[i][j].x - 4
-                && coords.x <= allPolygons[i][j].x + 4
-                && coords.y >= allPolygons[i][j].y - 4
-                && coords.y <= allPolygons[i][j].y + 4) {
+        // First check all vertices in allPolygons.
+        allPolygons.forEach((polygon, polyIndex) => {
+            polygon.forEach((vertex, vertIndex) => {
+                if (coords.x >= vertex.x - 4
+                && coords.x <= vertex.x + 4
+                && coords.y >= vertex.y - 4
+                && coords.y <= vertex.y + 4) {
                     if (polygonInProgress) {
                         return "existing";
                     } else {
-                        selectedPoint = { poly: i, vert: j, x: coords.x, y: coords.y };
+                        selectedPoint = { poly: polyIndex, vert: vertIndex, x: coords.x, y: coords.y };
                         return "dragging";
                     }
                 }
-            }
-        }
-        // then check all vertices in currentPolygon except 0
-        for (let i = 1; i < currentPolygon.length; i++) {
-            if (coords.x >= currentPolygon[i].x - 4
-            && coords.x <= currentPolygon[i].x + 4
-            && coords.y >= currentPolygon[i].y - 4
-            && coords.y <= currentPolygon[i].y + 4) {
+            });
+        });
+        // Then check all vertices in currentPolygon except 0.
+        currentPolygon.forEach((vertex) => {
+            if (coords.x >= vertex.x - 4
+            && coords.x <= vertex.x + 4
+            && coords.y >= vertex.y - 4
+            && coords.y <= vertex.y + 4) {
                 return "existing";
             }
-        }
-        // finally check for vertex 0 of currentPolygon
-        // and if the polygon is AT LEAST a triangle allow to save it
+        });
+        // Finally check for vertex 0 of currentPolygon and if the polygon is AT LEAST a triangle allow to save it.
         if (currentPolygon.length > 2
         && coords.x >= currentPolygon[0].x - 4
         && coords.x <= currentPolygon[0].x + 4
@@ -332,24 +329,24 @@ window.onload = function() {
         && coords.y <= currentPolygon[0].y + 4) {
             return "savePolygon";
         }
-        // if none of the above cases
+        // If none of the above cases.
         return "place"
     };
 
     const isClockwise = (vertices) => {
-        // Using the shoelace formula
+        // Using the shoelace formula.
         let xx = 0;
         let yy = 0;
-        for (let i = 0; i < vertices.length; i++) {
-            if(i !== vertices.length - 1) {
-                xx += vertices[i].x * vertices[i + 1].y;
-                yy += vertices[i].y * vertices[i + 1].x;
+        vertices.forEach((vertex, index) => {
+            if(index !== vertices.length - 1) {
+                xx += vertex.x * vertices[index + 1].y;
+                yy += vertex.y * vertices[index + 1].x;
             } else {
-                xx += vertices[i].x * vertices[0].y;
-                yy += vertices[i].y * vertices[0].x;
+                xx += vertex.x * vertices[0].y;
+                yy += vertex.y * vertices[0].x;
             }
-        }
-        // This is inverted because on HTML canvas Y is inverted
+        });
+        // This is inverted because on HTML canvas Y is inverted.
         if (xx > yy) {
             return true;
         }
@@ -360,11 +357,11 @@ window.onload = function() {
         const prev = vertices[vertex === 0 ? vertices.length - 1 : vertex - 1];
         const curr = vertices[vertex];
         const next = vertices[(vertex + 1) % vertices.length];
-        // convert the side of the polygon from "prev" to "curr" into a vector (origin to "vector1")
+        // Convert the side of the polygon from "prev" to "curr" into a vector (origin to "vector1").
         const vector1 = { x: curr.x - prev.x, y: curr.y - prev.y };
-        // convert the side of the polygon from "curr" to "next" into a vector (origin to "vector2")
+        // Convert the side of the polygon from "curr" to "next" into a vector (origin to "vector2").
         const vector2 = { x: next.x - curr.x, y: next.y - curr.y };
-        // get a cross product of the two vectors
+        // Get a cross product of the two vectors.
         // A cross product is a 3D vector (not a scalar) and in this case we have the z-axis be 0
         // so both vectors look like this: (value, value, 0). Because both vectors are flat on a
         // plane, the cross product looks like this: (0, 0, value) it's perpendicular to both of
@@ -393,7 +390,7 @@ window.onload = function() {
     const segmentsCross = (A, B, C, D) => {
         const crossProductABCD = ((B.x - A.x) * (D.y - C.y)) - ((B.y - A.y) * (D.x - C.x));
         
-        // vectors AB and CD are parallel
+        // Vectors AB and CD are parallel.
         if (crossProductABCD == 0) {
             return false;
         }
@@ -401,26 +398,25 @@ window.onload = function() {
         const crossProductACDC = ((A.y - C.y) * (D.x - C.x)) - ((A.x - C.x) * (D.y - C.y)); 
         const crossProductABAC = ((A.y - C.y) * (B.x - A.x)) - ((A.x - C.x) * (B.y - A.y));
         
-        // vectors AC and DC (or BA and AC) touch only at endpoints
-        // so in one case there is no B and in another no D
+        // Vectors AC and DC (or BA and AC) touch only at endpoints so in one case there is no B and in another no D.
         if (crossProductACDC == 0 || crossProductABAC == 0) {
             return false;
         }
         
-        // all other cases must be between 0 and a crossProduct of BADC
+        // All other cases must be between 0 and a crossProduct of BADC
         // so since neither is equal to 0 we divide by the crossProduct
-        // of BADC to make sure they aren't equal as (value / itself = 1)
+        // of BADC to make sure they aren't equal as (value / itself = 1).
         const test1 = crossProductACDC / crossProductABCD;
         const test2 = crossProductABAC / crossProductABCD;
         
         return (test1 > 0 && test1 < 1) && (test2 > 0 && test2 < 1);
     };
 
-    // Check if a point is inside a polygon
+    // Check if a point is inside a polygon.
     const isPointInside = (polygon, point) => {
         const isInside = false;
 
-        // Run a ray from off-screen to a point and count the times it crosses sides
+        // Run a ray from off-screen to a point and count the times it crosses sides.
         const origin = { x: -1, y: -1 };
         let crossings = 0;
 
@@ -446,14 +442,14 @@ window.onload = function() {
     const draw = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // In case an image was uploaded
+        // In case an image was uploaded.
         if (img.src !== "") {
             ctx.globalAlpha = 0.25;
             ctx.drawImage(img, 0, 0);
             ctx.globalAlpha = 1;
         }
 
-        // Draw the vertices and connecting lines of the polygon currently being built
+        // Draw the vertices and connecting lines of the polygon currently being built.
         if (polygonInProgress && selectedPoint === null) {
             for (let i = 0; i < currentPolygon.length; i++) {
                 ctx.fillStyle="#ff00ff";
@@ -471,7 +467,7 @@ window.onload = function() {
             ctx.lineTo(mouseData.x, mouseData.y);
             ctx.stroke();
         }
-        // Draw all other existing polygons
+        // Draw all other existing polygons.
         for (let i = 0; i < allPolygons.length; i++) {
             ctx.strokeStyle="#0000ff"; 
 
@@ -491,10 +487,10 @@ window.onload = function() {
                     ctx.fillStyle="#0000ff";
                 }
                 
-                // Draw vertices
+                // Draw vertices.
                 ctx.fillRect(allPolygons[i][j].x - 4, allPolygons[i][j].y - 4, 9, 9);
 
-                // Draw surfaces      
+                // Draw edges.     
                 if (j > 0) {    
                     ctx.beginPath();
                     ctx.moveTo(allPolygons[i][j - 1].x, allPolygons[i][j - 1].y);
