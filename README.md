@@ -5,6 +5,10 @@ This is a tool I wrote to help me with an adventure game engine I'm working on. 
 
 ![alt tag](http://www.alaric.us/adventure/tools/polygontool/sample3-4-17.png)
 
+Demo:
+
+[PolygonConstructor Demo](http://www.alaric.us/adventure/tools/polygontool/)
+
 Features:
 
 * Can choose either a default canvas size or a custom one.
